@@ -23,10 +23,10 @@ I went through tons of subdomain takeover projects on Github and merged their da
 
 Also, more checks will be added! I have another DMARC and SPF checker tool that I've yet to incorporate into DomRecon. Here is a list of TODOs (that'll grow after time):
 
-[] zone walk
-[] MX checks - takeover
-[] TXT checks - DMARC, SPF
-[] TXT checks - information leakage(?)
+- [ ] zone walk
+- [ ] MX checks - takeover
+- [ ] TXT checks - DMARC, SPF
+- [ ] TXT checks - information leakage(?)
 
 ## Usage
 
