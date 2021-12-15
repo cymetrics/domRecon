@@ -1,0 +1,346 @@
+[
+    {
+        "Engine": "000Domains",
+        "NS": [
+            "000domains.com"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "[Issue #19](https://github.com/indianajson/can-i-take-over-dns/issues/19)",
+        "Documentation": ""
+    },
+    {
+        "Engine": "AWS Route 53",
+        "NS": [
+            "awsdns"
+        ],
+        "Status": "Not vulnerable",
+        "Discussion": "[Issue #1](https://github.com/EdOverflow/can-i-take-over-xyz/issues/1)",
+        "Documentation": ""
+    },
+    {
+        "Engine": "Azure",
+        "NS": [
+            "azure-dns"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "[Issue #5](https://github.com/indianajson/can-i-take-over-dns/issues/5)",
+        "Documentation": ""
+    },
+    {
+        "Engine": "Bizland",
+        "NS": [
+            "bizland.com",
+            "click2site.com"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "[Issue #5](https://github.com/indianajson/can-i-take-over-dns/issues/5)",
+        "Documentation": ""
+    },
+    {
+        "Engine": "Cloudflare",
+        "NS": [
+            "cloudflare.com"
+        ],
+        "Status": "Possibly vulnerable",
+        "Discussion": "[Issue #10](https://github.com/indianajson/can-i-take-over-dns/issues/10)",
+        "Documentation": ""
+    },
+    {
+        "Engine": "Digital Ocean",
+        "NS": [
+            "digitalocean.com"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "[Issue #22](https://github.com/indianajson/can-i-take-over-dns/issues/22)",
+        "Documentation": ""
+    },
+    {
+        "Engine": "DNSMadeEasy",
+        "NS": [
+            "dnsmadeeasy.com"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "[Issue #6](https://github.com/indianajson/can-i-take-over-dns/issues/6)",
+        "Documentation": ""
+    },
+    {
+        "Engine": "DNSPod (Tencent Cloud)",
+        "NS": [
+            "dnsv4.com"
+        ],
+        "Status": "Possibly vulnerable",
+        "Discussion": "",
+        "Documentation": "[DNSPod Documentation](https://cloud.tencent.com/document/product/242/9595)"
+    },
+    {
+        "Engine": "DNSimple",
+        "NS": [
+            "dnsimple.com"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "[Issue #16](https://github.com/indianajson/can-i-take-over-dns/issues/16)",
+        "Documentation": ""
+    },
+    {
+        "Engine": "Domain.com",
+        "NS": [
+            "domain.com"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "[Issue #17](https://github.com/indianajson/can-i-take-over-dns/issues/17)",
+        "Documentation": ""
+    },
+    {
+        "Engine": "DomainPeople",
+        "NS": [
+            "domainpeople.com"
+        ],
+        "Status": "Not vulnerable",
+        "Discussion": "[Issue #14](https://github.com/indianajson/can-i-take-over-dns/issues/14)",
+        "Documentation": ""
+    },
+    {
+        "Engine": "Dotster",
+        "NS": [
+            "dotster.com",
+            "nameresolve.com"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "[Issue #18](https://github.com/indianajson/can-i-take-over-dns/issues/18)",
+        "Documentation": ""
+    },
+    {
+        "Engine": "EasyDNS",
+        "NS": [
+            "easydns"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "[Issue #9](https://github.com/indianajson/can-i-take-over-dns/issues/9)",
+        "Documentation": ""
+    },
+    {
+        "Engine": "Gandi.net",
+        "NS": [
+            "dns.gandi.net"
+        ],
+        "Status": "Not vulnerable",
+        "Discussion": "",
+        "Documentation": ""
+    },
+    {
+        "Engine": "Google Cloud",
+        "NS": [
+            "googledomains.com"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "[Issue #2](https://github.com/indianajson/can-i-take-over-dns/issues/2)",
+        "Documentation": ""
+    },
+    {
+        "Engine": "Hover",
+        "NS": [
+            "hover.com"
+        ],
+        "Status": "Not vulnerable",
+        "Discussion": "[Issue #21](https://github.com/indianajson/can-i-take-over-dns/issues/21)",
+        "Documentation": ""
+    },
+    {
+        "Engine": "Hurricane Electric",
+        "NS": [
+            "he.net"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "[Issue #25](https://github.com/indianajson/can-i-take-over-dns/issues/25)",
+        "Documentation": ""
+    },
+    {
+        "Engine": "Linode",
+        "NS": [
+            "linode.com"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "[Issue #26](https://github.com/indianajson/can-i-take-over-dns/issues/26)",
+        "Documentation": ""
+    },
+    {
+        "Engine": "MediaTemple",
+        "NS": [
+            "mediatemple.net"
+        ],
+        "Status": "Not vulnerable",
+        "Discussion": "[Issue #23](https://github.com/indianajson/can-i-take-over-dns/issues/23)",
+        "Documentation": ""
+    },
+    {
+        "Engine": "MyDomain",
+        "NS": [
+            "mydomain.com"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "[Issue #4](https://github.com/indianajson/can-i-take-over-dns/issues/4)",
+        "Documentation": ""
+    },
+    {
+        "Engine": "Name.com",
+        "NS": [
+            "name.com"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "[Issue #8](https://github.com/indianajson/can-i-take-over-dns/issues/8)",
+        "Documentation": ""
+    },
+    {
+        "Engine": "Network Solutions",
+        "NS": [
+            "worldnic.com"
+        ],
+        "Status": "Not vulnerable",
+        "Discussion": "[Issue #15](https://github.com/indianajson/can-i-take-over-dns/issues/15)",
+        "Documentation": ""
+    },
+    {
+        "Engine": "NS1",
+        "NS": [
+            "nsone.net"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "[Issue #7](https://github.com/indianajson/can-i-take-over-dns/issues/7)",
+        "Documentation": ""
+    },
+    {
+        "Engine": "TierraNet",
+        "NS": [
+            "domaindiscover.com"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "[Issue #24](https://github.com/indianajson/can-i-take-over-dns/issues/24)",
+        "Documentation": ""
+    },
+    {
+        "Engine": "Reg.ru",
+        "NS": [
+            "reg.ru"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "[Issue #28](https://github.com/indianajson/can-i-take-over-dns/issues/28)",
+        "Documentation": ""
+    },
+    {
+        "Engine": "UltraDNS",
+        "NS": [
+            "ultradns.com"
+        ],
+        "Status": "Not vulnerable",
+        "Discussion": "[Issue #29](https://github.com/indianajson/can-i-take-over-dns/issues/29)",
+        "Documentation": ""
+    },
+    {
+        "Engine": "Yahoo Small Business",
+        "NS": [
+            "yahoo.com"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "[Issue #20](https://github.com/indianajson/can-i-take-over-dns/issues/20)",
+        "Documentation": ""
+    },
+    {
+        "Engine": "Net-Chinese",
+        "NS": [
+            "net-chinese.com.tw"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "",
+        "Documentation": ""
+    },
+    {
+        "Engine": "ChungHwa Telecom",
+        "NS": [
+            "hinet.net"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "",
+        "Documentation": ""
+    },
+    {
+        "Engine": "Taiwan Fixed Network",
+        "NS": [
+            "tfn.net.tw"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "",
+        "Documentation": ""
+    },
+    {
+        "Engine": "Seednet",
+        "NS": [
+            "seed.net.tw"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "",
+        "Documentation": ""
+    },
+    {
+        "Engine": "Akamai",
+        "NS": [
+            "akam.net"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "",
+        "Documentation": ""
+    },
+    {
+        "Engine": "TWNIC",
+        "NS": [
+            "twnic.net.tw"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "",
+        "Documentation": ""
+    },
+    {
+        "Engine": "name080",
+        "NS": [
+            "080.tw"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "",
+        "Documentation": ""
+    },
+    {
+        "Engine": "PChome",
+        "NS": [
+            "cyberdns.tw"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "",
+        "Documentation": ""
+    },
+    {
+        "Engine": "GoDaddy",
+        "NS": [
+            "domaincontrol.com"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "",
+        "Documentation": ""
+    },
+    {
+        "Engine": "DigitalOcean",
+        "NS": [
+            "digitalocean.com"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "",
+        "Documentation": ""
+    },
+    {
+        "Engine": "Hostinger",
+        "NS": [
+            "dns-parking.com"
+        ],
+        "Status": "Vulnerable",
+        "Discussion": "[Issue #27](https://github.com/indianajson/can-i-take-over-dns/issues/27)",
+        "Documentation": ""
+    }
+]
