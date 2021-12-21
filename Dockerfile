@@ -3,7 +3,7 @@ RUN apk --no-cache add git
 RUN go get -v github.com/OWASP/Amass/v3/...
 
 FROM jfloff/alpine-python:3.7
-RUN apk --no-cache add ca-certificates bind-tools
+RUN apk --no-cache add ca-certificates bind-tools gawk
 COPY --from=build /go/bin/amass /bin/amass
 ENV HOME /
 

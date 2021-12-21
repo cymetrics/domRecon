@@ -25,8 +25,8 @@ class NSRecord(Record):
     def check_zone_transfer(self):
         check_name = 'zone_transfer'
         try:
-            ip_answer = query_dns(self.record, rdatatype.A)
-        except (resolver.NXDOMAIN, resolver.NoAnswer):
+            ip_answer = query_dns(self.record, rdatatype.A, timeout=5.0)
+        except (resolver.NXDOMAIN, resolver.NoAnswer, resolver.Timeout):
             msg = (CheckResults.FAIL, f"{self.record} ( No IP found, takeover possible! )")
             self.results[check_name] = msg
             self.print_console(msg)
@@ -57,6 +57,16 @@ class NSRecord(Record):
         check_name = 'takeover'
         msg = None
         service = self.provider.get_lookup
+        if not service:
+            msg = (CheckResults.WARNING, f"{self.record} (provider unknown)")
+            self.results[check_name] = msg
+            self.print_console(msg)
+            return
+        if service == 'self':
+            msg = (CheckResults.INFO, f"{self.record} ({service}, self-hosted)")
+            self.results[check_name] = msg
+            self.print_console(msg)
+            return
 
         with open(takeover_file, 'r') as infile:
             data = json.load(infile)

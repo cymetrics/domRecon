@@ -290,7 +290,8 @@
     {
         "Engine": "Cloudfront",
         "Cname": [
-            "cloudfront.net"
+            "cloudfront.net",
+            "cloudfront.cn"
         ],
         "Status": "Not vulnerable",
         "Fingerprint": "ViewerCertificateException",
@@ -413,7 +414,7 @@
         "Cname": [
             "feversocial.com"
         ],
-        "Status": "Vulnerable",
+        "Status": "Not vulnerable",
         "Fingerprint": "404",
         "Discussion": "",
         "Documentation": "[Documentation](https://info.feversocial.com/help/allaboutzines-124#pageadmin)"
@@ -605,7 +606,8 @@
     {
         "Engine": "Hicloud",
         "Cname": [
-            "hicloud.net.tw"
+            "hicloud.net.tw",
+            "hinet.net"
         ],
         "Status": "Vulnerable",
         "Fingerprint": "404",
@@ -787,9 +789,10 @@
         "Documentation": "[Landing Page](https://www.mtelnet.com/en/index.html)"
     },
     {
-        "Engine": "Microsoft",
+        "Engine": "Microsoft Azure",
         "Cname": [
             "azurewebsites.net",
+            "azurewebsites.windows.net",
             "cloudapp.net",
             "cloudapp.azure.com",
             "trafficmanager.net",
@@ -805,14 +808,42 @@
             "azurefd.net",
             "redis.cache.windows.net", 
             "servicebus.windows.net", 
-            "enterpriseregistration.windows.net",
-            "visualstudio.com",
-            "outlook.com"
+            "msappproxy.net"
         ],
         "Status": "Vulnerable",
         "Fingerprint": "404 Web Site not found",
         "Discussion": "[Issue #35](https://github.com/EdOverflow/can-i-take-over-xyz/issues/35)",
         "Documentation": ""
+    },
+    {
+        "Engine": "Microsoft Services",
+        "Cname": [
+            "secureserver.net",
+            "enterpriseregistration.windows.net",
+            "lync.com",
+            "microsoftonline-p.net",
+            "outlook.com",
+            "office365.com",
+            "office.com",
+            "msidentity.com",
+            "visualstudio.com",
+            "microsoftonline.com"
+        ],
+        "Status": "Not vulnerable",
+        "Fingerprint": "404 Web Site not found",
+        "Discussion": "",
+        "Documentation": ""
+    },
+    {
+        "Engine": "Mlytics",
+        "Cname": [
+            "mlycdn.com",
+            "mly.ai"
+        ],
+        "Status": "Not vulnerable",
+        "Fingerprint": "404",
+        "Discussion": "",
+        "Documentation": "[Assigned CNAMES](https://help.mlytics.com/article/111-how-to-complete-the-cname-setup-for-manual-dns-configuration)"
     },
     {
         "Engine": "Netlify",

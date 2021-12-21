@@ -205,7 +205,7 @@ class Domain():
             # option 2: if domain exists, don't create new one. Add records directly and modify printing
             if prev is not None and prev.domain == tok[0]:
                 if tok[1] == 'A':
-                    self.add_ips([tok[2]])
+                    prev.add_ips([tok[2]])
                 else:
                     for rec in tok[2].split(','):
                         prev.add_record(tok[1], rec, True, self.domain)
