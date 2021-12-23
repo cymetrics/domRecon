@@ -141,7 +141,7 @@ class Domain():
         print('[*] Resolving subdomains (A) with massDNS')
 
         # default use authoritative nameservers
-        nameservers = '\n'.join(list(map(lambda i: '\n'.join(query_record(i.record, "A")), self.records["NS"])))
+        nameservers = '\n'.join(list(map(lambda i: '\n'.join(filter(None,query_record(i.record, "A"))), self.records["NS"])))
         if nameservers:
             resolver = path.join(LIST_DIR, 'auth_ns.txt')
             with open(resolver, 'w') as outfile:

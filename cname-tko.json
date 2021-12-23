@@ -171,6 +171,16 @@
         "Documentation": ""
     },
     {
+        "Engine": "AWS/API gateway",
+        "Cname": [
+            ".execute-api."
+        ],
+        "Status": "Not vulnerable",
+        "Fingerprint": "404",
+        "Discussion": "",
+        "Documentation": ""
+    },
+    {
         "Engine": "AWS/EC2",
         "Cname": [
             "compute-1.amazonaws.com",
@@ -820,6 +830,7 @@
         "Cname": [
             "secureserver.net",
             "enterpriseregistration.windows.net",
+            "enterpriseenrollment.manage.microsoft.com",
             "lync.com",
             "microsoftonline-p.net",
             "outlook.com",
