@@ -70,8 +70,8 @@ def main():
     )
     parser.add_argument(
         '--amass-path',
-        default='amass',
-        help='Path to the amass binary, ex: /bin/amass, defaults to "amass"',
+        default='/bin/amass',
+        help='Path to the amass binary, ex: /usr/local/bin/amass, defaults to "/bin/amass"',
     )
     parser.add_argument(
         '--wordlist',
@@ -79,8 +79,8 @@ def main():
     )
     parser.add_argument(
         '--massdns-path',
-        default='massdns',
-        help='Path of the massdns binary, ex: /bin/massdns, defaults to "massdns"',
+        default='/bin/massdns',
+        help='Path of the massdns binary, ex: /usr/local/bin/massdns, defaults to "/bin/massdns"',
     )
     parser.add_argument(
         '--sublist',
