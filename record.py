@@ -77,7 +77,7 @@ class Record():
         for (k,v) in self.results.items():
             # if v[0] != CheckResults.PASS:
             print(f"\t{self.rectype} ({k}):", self.get_color(v[0]), v[1], bcolors.ENDC)
-    
+
     def get_color(self, res):
         if res == CheckResults.PASS:
             color = bcolors.OKCYAN

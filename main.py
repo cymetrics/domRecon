@@ -70,8 +70,8 @@ def main():
     )
     parser.add_argument(
         '--amass-path',
-        default='/bin/amass',
-        help='Path to the amass binary, ex: /usr/local/bin/amass, defaults to "/bin/amass"',
+        default='amass',
+        help='Path to the amass binary, ex: /usr/local/bin/amass, defaults to "amass"',
     )
     parser.add_argument(
         '--wordlist',
@@ -79,8 +79,8 @@ def main():
     )
     parser.add_argument(
         '--massdns-path',
-        default='/bin/massdns',
-        help='Path of the massdns binary, ex: /usr/local/bin/massdns, defaults to "/bin/massdns"',
+        default='massdns',
+        help='Path of the massdns binary, ex: /usr/local/bin/massdns, defaults to "massdns"',
     )
     parser.add_argument(
         '--sublist',
@@ -91,6 +91,12 @@ def main():
         '--recurse',
         action='store_true',
         help='Run recursively for resolved subdomains, the -a -t -z -e options will be applied to discovered records. If no check options are specified, records are simply printed',
+    )
+    parser.add_argument(
+        '-j',
+        '--json',
+        action='store_true',
+        help='Print json format output. This effectively compiles all failed checks into json format. No warnings or passed checks are included.',
     )
 
     args = parser.parse_args()
@@ -107,14 +113,16 @@ def main():
         
         if args.sublist or args.subdomain or args.sub_amass or args.sub_brute:
             if args.sublist:
-                dom.resolve_subdomains(args.sublist, args.massdns_path)
+                resolved = dom.resolve_subdomains(args.sublist, args.massdns_path)
             else:
                 if args.subdomain:
-                    dom.generate_subdomains(True, True, args.amass_path, args.massdns_path, args.wordlist)
+                    candidates = dom.generate_subdomains(True, True, args.amass_path, args.wordlist)
                 else:
-                    dom.generate_subdomains(args.sub_amass, args.sub_brute, args.amass_path, args.massdns_path, args.wordlist)
-            dom.check_subdomains()
-
+                    candidates = dom.generate_subdomains(args.sub_amass, args.sub_brute, args.amass_path, args.wordlist)
+                resolved = dom.resolve_subdomains(candidates, args.massdns_path)
+            dom.check_subdomains(resolved)
+    if args.json:
+        print(dom.print_json())
 
 
 if __name__ == "__main__":

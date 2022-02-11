@@ -1,22 +1,16 @@
-from os import path, makedirs
+from os import path
+import json
 from requests.models import HTTPError
 from utils import query_record, headers
 from output import print_header, bcolors
+from subdomain import generate, resolve
+from record import CheckResults
 import requests
-import subprocess
 
 requests.packages.urllib3.disable_warnings()
 
 LIST_DIR = 'lists'
-
-# output files
-OUTPUT_DIR = 'output'
-amass_out = path.join(OUTPUT_DIR, 'amass.txt')              # output from amass passive scan
-brute_out = path.join(OUTPUT_DIR, 'brute.txt')              # domains generated with commonspeak2
-resolved = path.join(OUTPUT_DIR, 'resolved.txt')            # resolved subdomains with massdns
-
 class Domain():
-
     def __init__(self, domain, zone, takeover, email, recurse, sub=False, ip='') -> None:
         self.domain = domain.lower().strip()
         self.ip = set(ip.split(',')) if ip else set()
@@ -37,18 +31,8 @@ class Domain():
         self.recurse = recurse
         self.sub = sub
 
+    '''Query records with DNS'''
     def get_records(self):
-        # TODO: this part is currently useless, since we don;t call get_records() anymore for subdomains
-        # if domain doesn't exist (no A no IP) or is a subdomain, we only check NS and CNAME records for takeover
-        # if self.sub or not query_existence(self.domain):
-        #     quiet = True
-        #     if self.zone:
-        #         to_fetch = ['NS']
-        #     if self.takeover:
-        #         to_fetch = ['NS','CNAME']
-        #     else:
-        #         return
-        # else:
         if not self.ip:
             self.add_ips(query_record(self.domain, 'A', timeout=5.0))
 
@@ -56,14 +40,12 @@ class Domain():
         quiet = False
 
         for tp in to_fetch:
-            # fetch record
             print_header(tp + " records", self.sub)
-            
             ans = query_record(self.domain, tp, timeout=5.0)
             for rec in ans:
                 self.add_record(tp, rec, quiet, self.domain)
 
-    
+    '''Add records to record list'''
     def add_record(self, tp, rec, quiet, base=None):
         # initiate record
         modname = tp.lower() + "_record"
@@ -79,6 +61,7 @@ class Domain():
     def add_ips(self, ips):
         self.ip.update(ips)
 
+    '''Check reocrds for vulns, will expand as checks grow'''
     def check_records(self):
         if self.zone:
             print_header("Zone Transfer", self.sub)
@@ -88,58 +71,37 @@ class Domain():
         if self.takeover:
             print_header("NS Subdomain Takeover", self.sub)
             for rec in self.records['NS']:
-                rec.check_takeover()
-            
+                rec.check_takeover()  
             print_header("CNAME Subdomain Takeover", self.sub)
             for rec in self.records['CNAME']:
                 rec.check_takeover()
         
-        # think about checking email...
-
-    def generate_subdomains(self, amass, brute, amass_path, massdns_path, wordlist):
+    '''Generate a candidate list of subdomains, using Amass, CommonSpeak, and output from NS checks'''
+    def generate_subdomains(self, amass, brute, amass_path, wordlist):
         print_header("Fetching subdomains", self.sub)
 
-        # make OUTPUT_DIR if it doesn't exist yet before we run the tools
-        makedirs(OUTPUT_DIR, exist_ok=True)
         if not wordlist:
             wordlist = path.join(LIST_DIR, 'commonspeak.txt')
-
         if not amass and not brute:
             print('No methods for searching subdomains!\nEither provide a subdomain list or specify at least one of -sa (amass) -sb (bruteforce)!')
             return
 
-        if amass:
-            print('[*] Gathering subdomains with Amass')
-            rawdomains = amass_out    
-            cmd = f"{amass_path} enum -timeout 15 --passive -d {self.domain} > {amass_out}"
-            try:
-                subprocess.run(cmd, shell=True, check=True)
-            except subprocess.SubprocessError as e:
-                print(f'Subprocess error in [amass]: {e}')
-        if brute:
-            print('[*] Gathering subdomains with commonspeak')
-            rawdomains = brute_out
-            cmd = f"awk 'NF{{print $0 \".{self.domain}\"}}' {wordlist} > {brute_out}"
-            try:
-                subprocess.run(cmd, shell=True, check=True)
-            except subprocess.SubprocessError as e:
-                print(f'Subprocess error in [brute]: {e}')
+        rawdomains = generate(self.domain, amass, brute, amass_path, wordlist)
         
-        if amass and brute:
-            print('[*] Merging Amass and commonspeak')
-            rawdomains = path.join(OUTPUT_DIR, 'final.txt')
-            cmd = f"awk '!seen[$0]++' {amass_out} {brute_out} > {rawdomains}"
-            try:
-                subprocess.run(cmd, shell=True, check=True)
-            except subprocess.SubprocessError as e:
-                print(f'Subprocess error in [merging]: {e}')
-        
-        self.resolve_subdomains(rawdomains, massdns_path)
+        # add ns vulns to list, ex: zone transfer and zone walk 
+        # note: traverse ns records -> parse msg for zone stuff is applicable -> append to rawdomains
+        doms = list()
+        for rec in self.records["NS"]:
+            msg = rec.results.get("zone_transfer")
+            if msg is not None and msg[0] == CheckResults.FAIL:
+                doms.extend(list(map(lambda x: x.split()[0].strip(".")+"\n", msg[1].split("\n")[1:-1])))
+        if doms:
+            with open(rawdomains, 'a') as raw:
+                raw.writelines(doms)
+        return rawdomains
 
-
+    '''Resolve subdomains using MassDNS'''
     def resolve_subdomains(self, sublist, massdns_path):  
-        print('[*] Resolving subdomains (A) with massDNS')
-
         # default use authoritative nameservers
         nameservers = '\n'.join(list(map(lambda i: '\n'.join(filter(None,query_record(i.record, "A"))), self.records["NS"])))
         if nameservers:
@@ -149,37 +111,16 @@ class Domain():
         else:
             resolver = path.join(LIST_DIR, 'resolver.txt')
 
-        # cmd = f"{massdns_path} -r {resolver} -q -t A -o S {sublist} | awk '{{x=$1 \" \" $2;a[x]=x in a?a[x] \",\" $3 : $3}}END{{for(i in a) print i \" \"a[i]}}' | sort > {resolved} "
-        cmd = f"{massdns_path} -r {resolver} -q -t A -o Sn {sublist} > {resolved}"
-        try:
-            subprocess.run(cmd, shell=True, check=True)
-        except subprocess.SubprocessError as e:
-            print(f'Subprocess error in [massdns] when resolving A records: {e}')
-        
-        if self.takeover:
-            print('[*] Resolving subdomains (NS, CNAME) with massDNS')
-            # cmd = f"{massdns_path} -r {resolver} -q -t NS -o Sn {sublist} | awk '{{x=$1 \" \" $2;a[x]=x in a?a[x] \",\" $3 : $3}}END{{for(i in a) print i \" \"a[i]}}' >> {resolved}; sort -u {resolved} -o {resolved}  "
-            cmd = f"{massdns_path} -r {resolver} -q -t NS -o Sn {sublist} >> {resolved}"
-            try:
-                subprocess.run(cmd, shell=True, check=True)
-            except subprocess.SubprocessError as e:
-                print(f'Subprocess error in [massdns] when resolving NS records: {e}')
-        
-        # clean up a bit
-        cmd = f"sort -u {resolved} | awk '{{x=$1 \" \" $2;a[x]=x in a?a[x] \",\" $3 : $3}}END{{for(i in a) print i \" \"a[i]}}' | sort -o {resolved}"
-        try:
-            subprocess.run(cmd, shell=True, check=True)
-        except subprocess.SubprocessError as e:
-            print(f'Subprocess error when resolving cleaning up resolved.txt: {e}')
+        resolved_list = resolve(resolver, sublist, massdns_path, self.takeover)
+        return resolved_list
 
-
-            
-    def check_subdomains(self):
+    '''Check subdomains for common vulns and print with colors'''
+    def check_subdomains(self, resolved_list):
         print_header("Checking subdomains", self.sub)
 
-        with open(resolved, 'r') as infile:
+        with open(resolved_list, 'r') as infile:
             lines = infile.readlines()
-            print(f'[*] Found active records: {len(lines)} (output in {resolved})')
+            print(f'[*] Found active records: {len(lines)} (output in {resolved_list})')
         
         if len(lines) > 200:
             # we grep the cname and ns records if takeover or zone transfer checks are specified
@@ -192,7 +133,7 @@ class Domain():
                     lines = list(filter(lambda i: i.split()[1] in to_check, lines))
                     print(f'[*] Too many lines... we only check CNAME and NS records {len(lines)}')
             else:
-                print(f'[*] Too many lines... checking only first 50 lines here. For full output see {resolved}')
+                print(f'[*] Too many lines... checking only first 50 lines here. For full output see {resolved_list}')
                 lines = lines[:50]
 
         prev = None
@@ -234,6 +175,7 @@ class Domain():
         # add last (missed in loop)
         self.add_subdomain(prev)
 
+    '''Add subdomains to subdomain list'''
     def add_subdomain(self, dom):
         if dom is not None:
             dom.check_records()
@@ -241,7 +183,7 @@ class Domain():
             dom.print_basic()
             self.subdomains.append(dom)
 
-
+    '''Check if HTTP/HTTPS connection is available to determine if it is a webserver'''
     def check_service(self):
         protos = ['https://', 'http://']
         for proto in protos:
@@ -255,6 +197,7 @@ class Domain():
                 # just treat them as failed 
                 pass
 
+    '''Used to print brief information on subdomains'''
     def print_basic(self):
         if self.ip:
             ips = ', '.join(self.ip)
@@ -269,3 +212,23 @@ class Domain():
         for checked in checklist:
             for rec in self.records[checked]:
                 rec.print_results()
+
+    '''Used to print identified risks in json formatted output. Only FAILED checks are printed.'''
+    def print_json(self):
+        json_out = {
+            "zone_transfer": [],
+            "takeover": [],
+        }
+        for rec in self.records['NS']:
+            z = rec.results.get('zone_transfer')
+            if z is not None and z[0] == CheckResults.FAIL:
+                json_out['zone_transfer'].append(z[1])
+            z = rec.results.get('takeover')
+            if z is not None and z[0] == CheckResults.FAIL:
+                json_out['takeover'].append(z[1])
+        for rec in self.records['CNAME']:
+            z = rec.results.get('takeover')
+            if z is not None and z[0] == CheckResults.FAIL:
+                json_out['takeover'].append(z[1])
+        
+        return json.dumps(json_out)
