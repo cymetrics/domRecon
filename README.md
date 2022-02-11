@@ -33,9 +33,9 @@ Also, more checks will be added! I have another DMARC and SPF checker tool that 
 **Dependencies: Amass and MassDNS**
 
 ```txt
-Usage: python3 main.py [-h] (-d DOMAIN | -l DOMAIN_LIST) [-a] [-z] [-t] [-e] [-s]
+Usage: domRecon [-h] (-d DOMAIN | -l DOMAIN_LIST) [-a] [-z] [-t] [-e] [-s]
                 [-sa] [-sb] [--amass-path AMASS_PATH] [--wordlist WORDLIST]
-                [--massdns-path MASSDNS_PATH] [--sublist SUBLIST] [-r]
+                [--massdns-path MASSDNS_PATH] [--sublist SUBLIST] [-r] [-j]
 
 Search for DNS records and check for simple domain-related vulnerabilities,
 such as zone transfers and takeovers. Also supports subdomain enumeration and
@@ -59,13 +59,13 @@ optional arguments:
   -sb, --sub-brute      Construct list of subdomains candidates with
                         bruteforce
   --amass-path AMASS_PATH
-                        Path to the amass binary, ex: /bin/amass, defaults to
-                        "amass"
+                        Path to the amass binary, ex: /usr/local/bin/amass,
+                        defaults to "amass"
   --wordlist WORDLIST   Path to the wordlist for bruteforcing subdomains,
                         defaults to the included "commonspeak.txt"
   --massdns-path MASSDNS_PATH
-                        Path of the massdns binary, ex: /bin/massdns, defaults
-                        to "massdns"
+                        Path of the massdns binary, ex:
+                        /usr/local/bin/massdns, defaults to "massdns"
   --sublist SUBLIST     Path to your custom list of subdomains, with one
                         domain on each line. Each domain will be resolved with
                         massdns and passed on to further checks
@@ -73,6 +73,9 @@ optional arguments:
                         -e options will be applied to discovered records. If
                         no check options are specified, records are simply
                         printed
+  -j, --json            Print json format output. This effectively compiles
+                        all failed checks into json format. No warnings or
+                        passed checks are included.
 ```
 
 For example, to check everything on the base domain and all enumerated subdomains:
@@ -96,6 +99,15 @@ Output files from subdomain enumeration and resolving will be stored in the `out
 If the resolved results exceed 200 records, subdomain checks will not cover all records. When `--recurse` is set, only CNAME and NS records will be checked for specified vulnerabilities; otherwise, only the first 50 records will be shown in output.
 
 Please check `resolved.txt` for complete results.
+
+If you want to output discovered vulnerabilities in json format, use the `-j` option. The format is:
+
+```json
+{
+  "zone_transfer": ["nsztm2.digi.ninja (34.225.33.2 Found zone file!\\nzonetransfer.me. 7200 IN SOA nsztm1.digi.ninja. robin.digi.ninja. 2019100801 172800 900 1209600 3600"], 
+  "takeover": []
+}
+```
 
 ## Docker
 
