@@ -1,5 +1,5 @@
 from record import Record, CheckResults
-from utils import query_dns
+from utils import query_dns, query_record
 from dns import zone, resolver, query, rdatatype
 import json
 
@@ -24,18 +24,18 @@ class NSRecord(Record):
 
     def check_zone_transfer(self):
         check_name = 'zone_transfer'
+        doms = list()
         try:
             ip_answer = query_dns(self.record, rdatatype.A, timeout=5.0)
         except (resolver.NXDOMAIN, resolver.NoAnswer, resolver.Timeout):
             msg = (CheckResults.WARNING, f"{self.record} ( No IP found, takeover possible! )")
             self.results[check_name] = msg
             self.print_console(msg)
-            return
+            return doms
         
         for ip in ip_answer:
-            print(ip)
             try:
-                nszone = zone.from_xfr(query.xfr(str(ip), self.base, timeout=5))
+                nszone = zone.from_xfr(query.xfr(str(ip), self.base, lifetime=5.0)).to_text(relativize=False).strip()
                 # no error means we successfully performed zone transfer!
                 # rs = ["Found zone file!\n"]
                 # for node in nszone:
@@ -43,14 +43,19 @@ class NSRecord(Record):
                 #         r = rdset.to_text(relativize=False)
                 #         print(r)
                 #         rs.append(r)
-                msg = (CheckResults.FAIL, f"{self.record} ({ip} Found zone file!\n" + nszone.to_text(relativize=False) + " )")
+                msg = (CheckResults.FAIL, f"{self.record} ({ip} Found zone file!\n" + nszone + " )")
+                doms = list(map(lambda x: x.split()[0].strip("."), nszone.split("\n")))
                         
-            except Exception as e:
-                print(e)
+            except query.TransferError:
                 msg = (CheckResults.PASS, f"{self.record} ({ip} GOOD, refused zone transfer)")
+            
+            except Exception as e:
+                print("Unexpected error: ", e)
+                msg = (CheckResults.WARNING, f"{self.record} ({ip} ERROR when checking)")
 
             self.results[check_name] = msg
             self.print_console(msg)
+            return doms
 
     def check_takeover(self):
         '''
@@ -108,5 +113,13 @@ class NSRecord(Record):
 
 
 if __name__ == "__main__":
-    rec = NSRecord("intns1.zonetransfer.me", "zonetransfer.me")
-    rec.check_zone_transfer()
+    # rec = NSRecord("ns2.megacorpone.com", "megacorpone.com")
+    # print(rec.check_zone_transfer())
+
+    ds = ["deltaww.com", "inventec.com", "asus.com"]
+    for d in ds:
+        print(d)
+        nss = query_record(d, "NS")
+        for ns in nss:
+            rec = NSRecord(ns, d)
+            rec.check_zone_transfer()

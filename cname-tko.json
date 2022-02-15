@@ -818,7 +818,8 @@
             "azurefd.net",
             "redis.cache.windows.net", 
             "servicebus.windows.net", 
-            "msappproxy.net"
+            "msappproxy.net",
+            "azure-api.net"
         ],
         "Status": "Vulnerable",
         "Fingerprint": "404 Web Site not found",
@@ -1136,9 +1137,9 @@
             "privatedomain.alchemer.eu",
             "privatedomain.alchemer-ca.com"
         ],
-        "Status": "Vulnerable",
+        "Status": "Not vulnerable",
         "Fingerprint": "data-html-name",
-        "Discussion": "[Issue #157](https://github.com/EdOverflow/can-i-take-over-xyz/issues/157)",
+        "Discussion": "[Issue #157](https://github.com/EdOverflow/can-i-take-over-xyz/issues/157), [Issue #246](https://github.com/EdOverflow/can-i-take-over-xyz/issues/246)",
         "Documentation": ""
     },
     {

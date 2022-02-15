@@ -1,5 +1,7 @@
 from os import path, makedirs
 import subprocess
+from utils import query_record
+from output import bcolors
 
 # output files
 OUTPUT_DIR = 'output'
@@ -69,3 +71,41 @@ def resolve(resolver, sublist, massdns_path, takeover):
         print(f'Subprocess error when resolving cleaning up resolved.txt: {e}')
     
     return resolved
+
+
+def zone_walk(domain):
+    doms = list()
+    # If zone not using DNSSEC or is using NSEC3, don't attempt zone walk at all
+    ans = query_record(domain, "DNSKEY")
+    if len(ans) == 0:
+        print('[*] Not using DNSSEC, no zone walk possible!')
+        return doms
+    
+    ans = query_record(domain, "NSEC3PARAM")
+    if len(ans) > 0:
+        print(ans[0])
+        print('[*] Using NSEC3, not vulnerable to zone walk! If you would like to traverse zone and crack hashes, use nsec3walker instead.')
+        return doms
+
+    doms.append(domain)
+    while True:
+        ans = query_record(domain, "NSEC")
+        if len(ans) == 0:
+            print('[*] No NSEC record found!')
+            return
+        nextdom = ans[0].split()[0].strip('.')
+        if nextdom == doms[0]:
+            print('[*] Finished zone walk')
+            break
+        else:
+            doms.append(nextdom)
+            domain = nextdom
+    
+    print(bcolors.OKGREEN, '\n'.join(doms), bcolors.ENDC)
+    return doms
+
+
+if __name__ == '__main__':
+    l = ['glints.com','matters.news']
+    for d in l:
+        zone_walk(d)

@@ -68,4 +68,9 @@ def merge():
     # print(sorted_service)
 
 if __name__ == '__main__':
-    merge()
+    ans = query_record("tms.com.tw", "DNSKEY")
+    print(ans)
+    ans = query_record("tms.com.tw", "NSEC3PARAM")
+    print(ans)
+    ans = query_record("tms.com.tw", "NSEC")
+    print(ans)

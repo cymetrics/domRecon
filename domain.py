@@ -3,7 +3,7 @@ import json
 from requests.models import HTTPError
 from utils import query_record, headers
 from output import print_header, bcolors
-from subdomain import generate, resolve
+from subdomain import generate, resolve, zone_walk
 from record import CheckResults
 import requests
 
@@ -21,7 +21,7 @@ class Domain():
             "CNAME": [],
             "TXT": [],
         }
-        self.subdomains = []
+        self.subdomains = []        # list of Domain() instances
 
         # store the arg flags
         self.web = ''
@@ -30,6 +30,7 @@ class Domain():
         self.email = email
         self.recurse = recurse
         self.sub = sub
+        self.zone_sub = list()      # dirty tmp holder
 
     '''Query records with DNS'''
     def get_records(self):
@@ -61,12 +62,19 @@ class Domain():
     def add_ips(self, ips):
         self.ip.update(ips)
 
-    '''Check reocrds for vulns, will expand as checks grow'''
+    '''Check records for vulns, will expand as checks grow'''
     def check_records(self):
         if self.zone:
             print_header("Zone Transfer", self.sub)
             for rec in self.records['NS']:
-                rec.check_zone_transfer()
+                d = rec.check_zone_transfer()
+                if len(d) > 0:
+                    self.zone_sub.extend(d)
+            print_header("Zone Walk", self.sub)
+            if len(self.records['NS']) > 0:
+                d = zone_walk(self.domain)
+                if len(d) > 0:
+                    self.zone_sub.extend(d)
 
         if self.takeover:
             print_header("NS Subdomain Takeover", self.sub)
@@ -89,15 +97,9 @@ class Domain():
         rawdomains = generate(self.domain, amass, brute, amass_path, wordlist)
         
         # add ns vulns to list, ex: zone transfer and zone walk 
-        # note: traverse ns records -> parse msg for zone stuff is applicable -> append to rawdomains
-        doms = list()
-        for rec in self.records["NS"]:
-            msg = rec.results.get("zone_transfer")
-            if msg is not None and msg[0] == CheckResults.FAIL:
-                doms.extend(list(map(lambda x: x.split()[0].strip(".")+"\n", msg[1].split("\n")[1:-1])))
-        if doms:
+        if len(self.zone_sub) > 0:
             with open(rawdomains, 'a') as raw:
-                raw.writelines(doms)
+                raw.writelines(list(map(lambda d: d + "\n", self.zone_sub)))
         return rawdomains
 
     '''Resolve subdomains using MassDNS'''
