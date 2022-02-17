@@ -44,19 +44,25 @@ def generate(domain, amass, brute, amass_path, wordlist):
     return rawdomains
 
 
-def resolve(resolver, sublist, massdns_path, takeover):
+def resolve(resolver, sublist, massdns_path, takeover, ip6):
     print('[*] Resolving subdomains (A) with massDNS')
 
-    # cmd = f"{massdns_path} -r {resolver} -q -t A -o S {sublist} | awk '{{x=$1 \" \" $2;a[x]=x in a?a[x] \",\" $3 : $3}}END{{for(i in a) print i \" \"a[i]}}' | sort > {resolved} "
     cmd = f"{massdns_path} -r {resolver} -q -t A -o Sn {sublist} > {resolved}"
     try:
         subprocess.run(cmd, shell=True, check=True)
     except subprocess.SubprocessError as e:
         print(f'Subprocess error in [massdns] when resolving A records: {e}')
     
+    if ip6:
+        print('[*] Resolving subdomains (AAAA) with massDNS')
+        cmd = f"{massdns_path} -r {resolver} -q -t AAAA -o Sn {sublist} >> {resolved}"
+        try:
+            subprocess.run(cmd, shell=True, check=True)
+        except subprocess.SubprocessError as e:
+            print(f'Subprocess error in [massdns] when resolving AAAA records: {e}')
+
     if takeover:
         print('[*] Resolving subdomains (NS, CNAME) with massDNS')
-        # cmd = f"{massdns_path} -r {resolver} -q -t NS -o Sn {sublist} | awk '{{x=$1 \" \" $2;a[x]=x in a?a[x] \",\" $3 : $3}}END{{for(i in a) print i \" \"a[i]}}' >> {resolved}; sort -u {resolved} -o {resolved}  "
         cmd = f"{massdns_path} -r {resolver} -q -t NS -o Sn {sublist} >> {resolved}"
         try:
             subprocess.run(cmd, shell=True, check=True)

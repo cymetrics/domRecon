@@ -11,7 +11,7 @@ requests.packages.urllib3.disable_warnings()
 
 LIST_DIR = 'lists'
 class Domain():
-    def __init__(self, domain, zone, takeover, email, recurse, sub=False, ip='') -> None:
+    def __init__(self, domain, zone, takeover, email, recurse, ip6, sub=False, ip='') -> None:
         self.domain = domain.lower().strip()
         self.ip = set(ip.split(',')) if ip else set()
         self.records = {
@@ -30,12 +30,15 @@ class Domain():
         self.email = email
         self.recurse = recurse
         self.sub = sub
+        self.ip6 = ip6
         self.zone_sub = list()      # dirty tmp holder
 
     '''Query records with DNS'''
     def get_records(self):
         if not self.ip:
             self.add_ips(query_record(self.domain, 'A', timeout=5.0))
+            if self.ip6:
+                self.add_ips(query_record(self.domain, 'AAAA', timeout=5.0))
 
         to_fetch = self.records.keys()
         quiet = False
@@ -113,7 +116,7 @@ class Domain():
         else:
             resolver = path.join(LIST_DIR, 'resolver.txt')
 
-        resolved_list = resolve(resolver, sublist, massdns_path, self.takeover)
+        resolved_list = resolve(resolver, sublist, massdns_path, self.takeover, self.ip6)
         return resolved_list
 
     '''Check subdomains for common vulns and print with colors'''
@@ -147,27 +150,29 @@ class Domain():
 
             # option 2: if domain exists, don't create new one. Add records directly and modify printing
             if prev is not None and prev.domain == tok[0]:
-                if tok[1] == 'A':
+                if tok[1] == 'A' or tok[1] == 'AAAA':
                     prev.add_ips([tok[2]])
                 else:
                     for rec in tok[2].split(','):
                         prev.add_record(tok[1], rec, True, self.domain)
             else:
                 # domain doesn't exist, create a new one
-                if tok[1] == 'A':
+                if tok[1] == 'A' or tok[1] == 'AAAA':
                     if self.recurse:
-                        dom = Domain(tok[0], zone=self.zone, takeover=self.takeover, email=self.email, recurse=False, sub=True, ip=tok[2])
+                        dom = Domain(tok[0], zone=self.zone, takeover=self.takeover, email=self.email, recurse=False, ip6=self.ip6, sub=True, ip=tok[2])
                     else:
-                        dom = Domain(tok[0], zone=False, takeover=False, email=False, recurse=False, sub=True, ip=tok[2])
+                        dom = Domain(tok[0], zone=False, takeover=False, email=False, recurse=False, ip6=self.ip6, sub=True, ip=tok[2])
                 elif tok[1] == 'CNAME' or tok[1] == 'NS':
                     if self.recurse:
-                        dom = Domain(tok[0], zone=self.zone, takeover=self.takeover, email=self.email, recurse=False, sub=True)
+                        dom = Domain(tok[0], zone=self.zone, takeover=self.takeover, email=self.email, recurse=False, ip6=self.ip6, sub=True)
                     else:
-                        dom = Domain(tok[0], zone=False, takeover=False, email=False, recurse=False, sub=True)
+                        dom = Domain(tok[0], zone=False, takeover=False, email=False, recurse=False, ip6=self.ip6, sub=True)
                     for rec in tok[2].split(','):
                         dom.add_record(tok[1], rec, True, self.domain)
                     # resolve ip 
                     dom.add_ips(query_record(tok[0], 'A'))
+                    if self.ip6:
+                        dom.add_ips(query_record(tok[0], 'AAAA'))
                 else:
                     print(f'Unexpected record type! {line}')
                 

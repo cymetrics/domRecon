@@ -92,6 +92,13 @@ def main():
         action='store_true',
         help='Run recursively for resolved subdomains, the -a -t -z -e options will be applied to discovered records. If no check options are specified, records are simply printed',
     )
+
+    # other options
+    parser.add_argument(
+        '--ip6',
+        action='store_true',
+        help='Supports IPv6. If enabled, also checks for IPv6 addresses for domains. Also resolves AAAA records when enumerating subdomains.',
+    )
     parser.add_argument(
         '-j',
         '--json',
@@ -102,9 +109,9 @@ def main():
     args = parser.parse_args()
     if args.domain:
         if args.all:
-            dom = Domain(args.domain, True, True, True, args.recurse)
+            dom = Domain(args.domain, True, True, True, args.recurse, args.ip6)
         else:
-            dom = Domain(args.domain, args.zone, args.takeover, args.email, args.recurse)
+            dom = Domain(args.domain, args.zone, args.takeover, args.email, args.recurse, args.ip6)
         dom.check_service()
 
         if args.all or args.zone or args.takeover or args.email:
