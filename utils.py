@@ -41,7 +41,7 @@ def query_record(domain, record_type, nameservers=None, timeout=2.0):
     res = []
     try:
         res = query_dns(domain, record_type, nameservers, timeout)
-    except dns.resolver.NoAnswer:
+    except (dns.resolver.NoAnswer, dns.resolver.NoNameservers):
         pass
     except Exception as e:
         print(f'Exception querying {record_type} records for {domain}. {e}')

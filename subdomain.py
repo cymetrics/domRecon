@@ -98,7 +98,7 @@ def zone_walk(domain):
         ans = query_record(domain, "NSEC")
         if len(ans) == 0:
             print('[*] No NSEC record found!')
-            return
+            return doms
         nextdom = ans[0].split()[0].strip('.')
         if nextdom == doms[0]:
             print('[*] Finished zone walk')
