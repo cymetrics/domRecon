@@ -135,3 +135,25 @@ do
     echo "Done with $i, output in ${i}_out.txt"
 done
 ```
+
+## Pitfalls
+
+There are a few pitfalls that I encountered when bulk testing on domains. Here's some of them.
+
+### Slow nameservers
+
+When resolving subdomains, MassDNS queries against the **authoritative nameservers** for the most accurate results. However, depending on the how you host your nameservers, the reply speed may be drastically different. Popular cloud services such as AWS and Azure often have a lower latency, and self-hosted on-premise nameservers usually take longer. Total testing time with all options enabled could range from 20 to 100 minutes depending on network conditions.
+
+Suggestion: Be patient, unless it's been stuck for more than two hours. In that case, you might have been banned. 
+
+### Banned
+
+You might be banned if the tool gives lots of errors, takes an extremely long time to complete, or produces no results even when you're sure the domain exists. There are two types of bans: 
+
+First, your network/internet provider detected abnormal DNS traffic and cut you off. Consider deploying or running the tool with a cloud service. We had an Azure VM in use and ran bulk tests with it to avoid alerting internet providers.
+
+Second, the target authoritative nameservers detected massive requests and banned your IP. Unless you're running multiple tests in parallel against a nameserver, this shouldn't be triggered too easily, but if it does, there's not much you can do except wait for the ban to expire or use another machine (with a different IP). Normally this might happen during subdomain enumeration, because the tool first resolves for A and CNAME records against all the candidates, and if you specify IPv6 or takeover, it resolves again but with AAAA and NS records. This means that for 100 candidates, it normally makes 100 DNS requests, but if all options are used, it makes 300 requests. In all, that's 3 times the original DNS traffic, not to mention that if you use the bruteforcing option there are *millions* of candidates. If you get banned, stop the tool because there won't be more progress. You can retry domain resolution using massDNS with other rate options to decrease the loading (might run longer) then feed the results into domrecon to run the checks.
+
+### Endless subdomains
+
+In e-commerce applications, you often can register your own shop on the platform and you will get a subdomain prefixed with your username. For example, if user `unipopcorn` opens a store on `beststore.com`, her site might be located on `unipopcorn.beststore.com`. Another example is web hosting services, such as GitHub pages. Since the domain is hosted and managed as a subdomain, it shows up during subdomain enumeration, but it's NOT what we were trying to find (we are digging for secret/dangerous domains). The tool can't distinguish between subdomains, so it's recommended to not run the tool on such websites, otherwise the tool might run for hours and you will only get tons of false positives.

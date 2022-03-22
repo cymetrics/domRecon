@@ -520,6 +520,16 @@
         "Documentation": ""
     },
     {
+        "Engine": "Gitbook",
+        "Cname": [
+            "gitbook.com"
+        ],
+        "Status": "Vulnerable",
+        "Fingerprint": "Domain not found",
+        "Discussion": "[Issue #259](https://github.com/EdOverflow/can-i-take-over-xyz/issues/259)",
+        "Documentation": ""
+    },
+    {
         "Engine": "Github",
         "Cname": [
             "github.io",
@@ -1026,6 +1036,16 @@
         "Documentation": "[Medium Article](https://medium.com/@thebuckhacker/how-to-do-55-000-subdomain-takeover-in-a-blink-of-an-eye-a94954c3fc75)"
     },
     {
+        "Engine": "Short.io",
+        "Cname": [
+            "short.io"
+        ],
+        "Status": "Vulnerable",
+        "Fingerprint": "This domain is not configured on Short.io",
+        "Discussion": "[Issue #260](https://github.com/EdOverflow/can-i-take-over-xyz/issues/260)",
+        "Documentation": "[Documentation](https://help.short.io/en/articles/4065825-general-subdomain-setup-instruction)"
+    },
+    {
         "Engine": "SimpleBooklet",
         "Cname": [
             "simplebooklet.com"
@@ -1187,7 +1207,7 @@
         "Cname": [
             "domains.tumblr.com"
         ],
-        "Status": "Vulnerable",
+        "Status": "Not vulnerable",
         "Fingerprint": "Whatever you were looking for doesn't currently exist at this address",
         "Discussion": "[Issue #240](https://github.com/EdOverflow/can-i-take-over-xyz/issues/240)",
         "Documentation": ""
@@ -1261,7 +1281,7 @@
             "proxy-ssl.webflow.com",
             "webflow.io"
         ],
-        "Status": "Possibly vulnerable",
+        "Status": "Not vulnerable",
         "Fingerprint": "The page you are looking for doesn't exist or has been moved.",
         "Discussion": "[Issue #44](https://github.com/EdOverflow/can-i-take-over-xyz/issues/44)",
         "Documentation": "[forum webflow](https://forum.webflow.com/t/hosting-a-subdomain-on-webflow/59201)"
