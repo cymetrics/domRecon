@@ -33,6 +33,13 @@ class Domain():
         self.ip6 = ip6
         self.zone_sub = list()      # dirty tmp holder
 
+        ## output
+        self.json_out = {
+            "zone_transfer": [],
+            "zone_walk": [],
+            "takeover": [],
+        }
+
     '''Query records with DNS'''
     def get_records(self):
         if not self.ip:
@@ -78,6 +85,7 @@ class Domain():
                 d = zone_walk(self.domain)
                 if len(d) > 0:
                     self.zone_sub.extend(d)
+                    self.json_out['zone_walk'].extend(d)
 
         if self.takeover:
             print_header("NS Subdomain Takeover", self.sub)
@@ -222,20 +230,16 @@ class Domain():
 
     '''Used to print identified risks in json formatted output. Only FAILED checks are printed.'''
     def print_json(self):
-        json_out = {
-            "zone_transfer": [],
-            "takeover": [],
-        }
         for rec in self.records['NS']:
             z = rec.results.get('zone_transfer')
             if z is not None and z[0] == CheckResults.FAIL:
-                json_out['zone_transfer'].append(z[1])
+                self.json_out['zone_transfer'].append(z[1])
             z = rec.results.get('takeover')
             if z is not None and z[0] == CheckResults.FAIL:
-                json_out['takeover'].append(z[1])
+                self.json_out['takeover'].append(z[1])
         for rec in self.records['CNAME']:
             z = rec.results.get('takeover')
             if z is not None and z[0] == CheckResults.FAIL:
-                json_out['takeover'].append(z[1])
+                self.json_out['takeover'].append(z[1])
         
-        return json.dumps(json_out)
+        return json.dumps(self.json_out)

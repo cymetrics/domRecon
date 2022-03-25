@@ -37,11 +37,11 @@ def query_dns(domain, record_type, nameservers=None, timeout=2.0):
     return records
 
 
-def query_record(domain, record_type, nameservers=None, timeout=2.0):
+def query_record(domain, record_type, nameservers=None, timeout=5.0):
     res = []
     try:
         res = query_dns(domain, record_type, nameservers, timeout)
-    except (dns.resolver.NoAnswer, dns.resolver.NoNameservers):
+    except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer, dns.resolver.NoNameservers):
         pass
     except Exception as e:
         print(f'Exception querying {record_type} records for {domain}. {e}')
@@ -74,3 +74,12 @@ if __name__ == '__main__':
     print(ans)
     ans = query_record("tms.com.tw", "NSEC")
     print(ans)
+
+    # import dns.message
+    # import dns.query
+    # req = dns.message.make_query('bkex.com',dns.rdatatype.NSEC, want_dnssec=True)
+    # resp = dns.query.udp(req,"1.1.1.1")
+    # print(resp)
+    # if resp.rcode() != 0:
+    #     print("Query failed! ", resp)
+    # print(resp.answer)

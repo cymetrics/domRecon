@@ -93,12 +93,18 @@ def zone_walk(domain):
         print('[*] Using NSEC3, not vulnerable to zone walk! If you would like to traverse zone and crack hashes, use nsec3walker instead.')
         return doms
 
-    doms.append(domain)
+    # check for black lies
+    ans = query_record('.'.join(['ireallydontexist',domain]), "NSEC")
+    if len(ans) != 0 and ans[0].split()[0].strip('.').startswith("\\000"):
+        print('[*] Domain is using "Black lies" proposed by Cloudflare to block zone walking.')
+        return doms
+
+    doms = [domain]
     while True:
-        ans = query_record(domain, "NSEC")
+        ans = query_record(domain, "NSEC", timeout=10.0)    # setting this larger so walk doesn't break
         if len(ans) == 0:
-            print('[*] No NSEC record found!')
-            return doms
+            print('[*] NSEC chain broken! There may be a connection issue, or the domain may be following RFC4470, dubbed "White Lies", to prevent zone walking.')
+            break
         nextdom = ans[0].split()[0].strip('.')
         if nextdom == doms[0]:
             print('[*] Finished zone walk')
@@ -112,6 +118,7 @@ def zone_walk(domain):
 
 
 if __name__ == '__main__':
-    l = ['glints.com','matters.news']
+    l = ["crypto.com"]
     for d in l:
-        zone_walk(d)
+        print(d)
+        print(zone_walk(d))

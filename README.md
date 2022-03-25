@@ -106,6 +106,7 @@ If you want to output discovered vulnerabilities in json format, use the `-j` op
 ```json
 {
   "zone_transfer": ["nsztm2.digi.ninja (34.225.33.2 Found zone file!\\nzonetransfer.me. 7200 IN SOA nsztm1.digi.ninja. robin.digi.ninja. 2019100801 172800 900 1209600 3600"], 
+  "zone_walk": ["pixeltopic.com", "ftp.pixeltopic.com", "imap.pixeltopic.com"],
   "takeover": []
 }
 ```
